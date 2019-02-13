@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+       /* Set the size of the div element that contains the map */
+      #map {
+        height: 400px;  /* The height is 400 pixels */
+        width: 100%;  /* The width is the width of the web page */
+       }
+    </style>
+    <title>Waldo</title>
+  </head>
+  <body>
+   <h1 style="
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;">Spot Waldo | Dashboard</h1>
+    <!--The div element for the map -->
+    <div id="map"></div>
+
+
+
+
+<script src="https://www.gstatic.com/firebasejs/5.8.2/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "{PUT IN YOUR FIREBASE INFO HERE}",
+    authDomain: "{PUT IN YOUR FIREBASE INFO HERE}",
+    databaseURL: "{PUT IN YOUR FIREBASE INFO HERE}",
+    projectId: "{PUT IN YOUR FIREBASE INFO HERE}",
+    storageBucket: "{PUT IN YOUR FIREBASE INFO HERE}",
+    messagingSenderId: "{PUT IN YOUR FIREBASE INFO HERE}",
+  };
+  firebase.initializeApp(config);
+</script>
+
+
+    <script>
+      function toggleBounce() {
+  if (marker.getAnimation() !== null) {
+    marker.setAnimation(null);
+  } else {
+    marker.setAnimation(google.maps.Animation.BOUNCE);
+  }
+}
+// Initialize and add the map
+ function setMapOnAll(map) {
+        for (var i = 0; i < markers.length; i++) {
+          markers[i].setMap(map);
+        }
+      }
+  var map, infoWindow;
+   var markers = [];
+function initMap() {
+  // The location of Uluru
+  // The map, centered at Uluru
+  // var map = new google.maps.Map(
+  //     document.getElementById('map'), {zoom: 4, center: uluru});
+
+    map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: 43.471737, lng: -80.543640},
+          zoom: 20
+        });
+  
+
+  // Get a reference to the database service
+var database = firebase.database();
+
+var waldos = firebase.database().ref();
+waldos.on('value', function(snapshot) {
+  console.log(snapshot.val())
+    setMapOnAll(null);
+  for(var i = 0; i < Object.keys(snapshot.val()).length; i++){
+    var waldo = snapshot.val()[Object.keys(snapshot.val())[i]];
+     var coords = {lat: waldo.location.latitude, lng: waldo.location.longitude};
+      var marker = new google.maps.Marker({position: coords, map: map,  label: { color: '#000000', fontWeight: 'bold', fontSize: '14px', text: 'User #: ' + (i+1).toString() }});
+        marker.addListener('click', toggleBounce);
+          markers.push(marker);
+
+  }
+
+});
+
+}
+
+    </script>
+    <!--Load the API from the specified URL
+    * The async attribute allows the browser to render the page while the API loads
+    * The key parameter will contain your own API key (which is not needed for this tutorial)
+    * The callback parameter executes the initMap() function
+    -->
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key={PUT YOUR GOOGLE MAPS API KEY HERE}&callback=initMap">
+    </script>
+  </body>
+</html>

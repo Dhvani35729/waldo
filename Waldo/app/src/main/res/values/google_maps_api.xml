@@ -1,0 +1,6 @@
+<resources>
+    <!--
+    Get google maps key online.
+    -->
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">PUT YOUR GOOGLE MAPS API KEY HERE</string>
+</resources>
